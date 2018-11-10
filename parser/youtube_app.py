@@ -1,7 +1,7 @@
 import requests
 import re
 import random
-from youtube_parser.dao.dao import create_blogger, create_content, create_link, create_batch_click
+from dao.dao import create_blogger, create_content, create_link, create_batch_click
 
 
 def get_video_info(video_id):
