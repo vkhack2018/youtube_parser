@@ -1,7 +1,7 @@
 import requests
 import re
 import random
-from dao.dao import create_blogger, create_content, create_link, create_click
+from youtube_parser.dao.dao import create_blogger, create_content, create_link, create_batch_click
 
 
 def get_video_info(video_id):
@@ -81,9 +81,10 @@ def push_link_click(link_id, all_time_stat):
     bucket_size = all_time_stat["bucket_size"]
     for i in range(len(buckets)):
         start_time = end_time + bucket_size * (i - len(buckets))
+        clicks = []
         for t in range(buckets[i]):
-            create_click(link_id, start_time + random.randint(0, bucket_size))
-
+            clicks.append({"link_id": link_id, "time": start_time + random.randint(0, bucket_size)})
+        create_batch_click(clicks)
 
 # TODO it can return all stats about link not only clicks
 def find_link_stat(googl_url):
@@ -93,7 +94,7 @@ def find_link_stat(googl_url):
     return resp['details']['all time']['clicks']
 
 
-channel_ids = ["UCrRvbjv5hR1YrRoqIRjH3QA"]
+channel_ids = ["UC29J5CXmsnqX7JPAzlU9yCQ", "UCrRvbjv5hR1YrRoqIRjH3QA"] # ]
 
 for channel in channel_ids:
 
@@ -107,14 +108,15 @@ for channel in channel_ids:
     videos = get_videos(channel)
     print("Collected videos from channel=" + str(videos.__len__()))
     for video in videos:
+
+        googl_urls = find_googl_links(video['description'])
+        if googl_urls.__len__() == 0: continue
         url = "https://www.youtube.com/watch?v=" + video['id']
         views, likes, dislikes = get_video_info(video['id'])
         content_id = create_content(video["title"],
                                     video["img"],
                                     "video",
                                     url, blogger_id, views, likes, dislikes)
-
-        googl_urls = find_googl_links(video['description'])
 
         for url in googl_urls:
             original_url = find_original_link(url)
@@ -124,4 +126,4 @@ for channel in channel_ids:
                                   blogger_id,
                                   original_url, url, stat["short_url"])
 
-            # push_link_click(link_id, stat)
+            push_link_click(link_id, stat)
