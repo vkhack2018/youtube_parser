@@ -75,4 +75,4 @@ def create_click(link_id, time):
 
 
 def create_batch_click(clicks):
-    resp = requests.post(base_url + '/click/batch', json=json.dumps(clicks))
+    resp = requests.post(base_url + '/click/batch', json=clicks)

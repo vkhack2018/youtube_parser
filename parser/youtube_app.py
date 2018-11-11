@@ -82,9 +82,11 @@ def push_link_click(link_id, all_time_stat):
     for i in range(len(buckets)):
         start_time = end_time + bucket_size * (i - len(buckets))
         clicks = []
+        if buckets[i] == 0: continue
         for t in range(buckets[i]):
             clicks.append({"link_id": link_id, "time": start_time + random.randint(0, bucket_size)})
         create_batch_click(clicks)
+
 
 # TODO it can return all stats about link not only clicks
 def find_link_stat(googl_url):
@@ -126,4 +128,4 @@ for channel in channel_ids:
                                   blogger_id,
                                   original_url, url, stat["short_url"])
 
-            push_link_click(link_id, stat)
+            # push_link_click(link_id, stat)
